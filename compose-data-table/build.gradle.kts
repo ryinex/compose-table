@@ -123,7 +123,7 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(group.toString(), name, version.toString())
+    coordinates(rootProject.group.toString(), name, rootProject.version.toString())
 
     pom {
         name = "Compose Table"

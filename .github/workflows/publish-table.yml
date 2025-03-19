@@ -40,6 +40,8 @@ jobs:
                     client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }} # Update this to your own Github references
                     env-slug: "prod"
                     project-slug: "compose-table-z-aw-w"
+                    secret-path: "/publish"
+                    domain: https://eu.infisical.com
 
             -   name: Prepare Release Version
                 id: prepareVersion
