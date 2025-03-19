@@ -1,0 +1,2 @@
+-keep class com.ryinex.kotlin.datatable.** { *; }
+-dontwarn java.lang.invoke.StringConcatFactory

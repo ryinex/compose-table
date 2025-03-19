@@ -1,0 +1,51 @@
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+name: Check Development
+
+on:
+    push:
+        branches:
+            - hotfix/*
+            - fix/*
+            - feat*/*
+            - refactor/*
+            - update/*
+            - dev
+    workflow_dispatch:
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        name: Check Development
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: actions/setup-java@v4
+                name: Setup Java
+                with:
+                    distribution: 'oracle'
+                    java-version: '17'
+
+            -   name: Setup gradle
+                uses: gradle/actions/setup-gradle@v4
+                with:
+                    cache-read-only: ${{ github.ref != 'refs/heads/dev' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
+                    gradle-home-cache-includes: |
+                        caches
+                        notifications
+                    gradle-home-cache-cleanup: true
+                env:
+                    GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
+
+            -   name: Ktlint
+                run: ./gradlew ktlintCheck --stacktrace --quiet
+
+            -   name: Lint
+                run: ./gradlew lint --stacktrace --quiet
+
+            -   name: Unit tests
+                run: ./gradlew test --stacktrace --quiet
+
+            -   name: Check
+                run: ./gradlew check --stacktrace --quiet
