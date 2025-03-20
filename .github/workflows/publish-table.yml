@@ -39,7 +39,7 @@ jobs:
                 with:
                     client-id: ${{ secrets.MACHINE_IDENTITY_CLIENT_ID }} # Update this to your own Github references
                     client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }} # Update this to your own Github references
-                    env-slug: "dev"
+                    env-slug: "prod"
                     project-slug: "secrets"
                     secret-path: "/compose-table/environment"
                     export-type: "file"
