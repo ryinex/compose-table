@@ -201,11 +201,16 @@ private fun <VALUE : Comparable<VALUE>, DATA : Any> DataTable<DATA>.comparable(
 }
 
 fun <T : Any> DataTable<T>.setList(list: List<T>, key: ((Int, T) -> Any)? = null): DataTable<T> {
+    val current = rows.state.value
+    if (current.isEmpty()) resetWidths()
+
     rows.setList(list, key)
     return this
 }
 
 fun <T : Any> DataTable<T>.appendList(list: List<T>): DataTable<T> {
+    val current = rows.state.value
+    if (current.isEmpty()) resetWidths()
     rows.append(list)
     return this
 }

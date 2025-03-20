@@ -138,6 +138,10 @@ class DataTable<DATA : Any>(
         this.config.value = config
     }
 
+    fun resetWidths() {
+        columns.forEach { it.resetWidths() }
+    }
+
     companion object {
         internal const val INDEX_COLUMN_TAG = "index-column"
     }

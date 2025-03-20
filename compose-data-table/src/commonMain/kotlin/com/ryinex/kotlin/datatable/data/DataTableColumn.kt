@@ -204,6 +204,15 @@ sealed class DataTableColumn<VALUE, DATA : Any>(
         this.view.value = this.view.value.copy(width = width)
     }
 
+    fun resetWidths() {
+        setViewPortWidth(0)
+        widths.currentViewPortWidth = 0
+        widths.lastViewPortWidth = 0
+        widths.headerCellWidth = 0
+        widths.firstCellWidth = 0
+        widths.largestRegularCellWidth = 0
+    }
+
     private fun setViewPortLayout(layout: DataTableColumnLayout) {
         widths.lastViewPortWidth = this.view.value.width
         this.view.value = this.view.value.copy(layout = layout)
