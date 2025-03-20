@@ -47,7 +47,7 @@ jobs:
                     project-slug: "secrets"
                     secret-path: "/compose-table/environment"
                     export-type: "file"
-                    file-output-path: ".env"
+                    file-output-path: "/.env"
                     domain: https://eu.infisical.com
 
             -   name: Ktlint
