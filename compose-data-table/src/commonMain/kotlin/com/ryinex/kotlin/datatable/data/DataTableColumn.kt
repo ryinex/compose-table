@@ -25,7 +25,9 @@ internal data class DataTableColumnWidths(
     val isInitialized get() = headerCellWidth != 0 && firstCellWidth != 0
     val smallest get() = minOf(headerCellWidth, firstCellWidth, largestRegularCellWidth)
 
-    fun isStaled(other: Int) = other <= largestRegularCellWidth || other == lastViewPortWidth || other <= currentViewPortWidth
+    fun isStaled(other: Int): Boolean {
+        return other <= largestRegularCellWidth || other == lastViewPortWidth || other <= currentViewPortWidth
+    }
 }
 
 internal data class DataTableColumnViewPort(
