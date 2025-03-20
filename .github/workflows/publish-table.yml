@@ -34,25 +34,33 @@ jobs:
                 env:
                     GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
 
-            -   uses: Infisical/secrets-action@v1.0.9
+            -   name: Environment
+                uses: Infisical/secrets-action@v1.0.9
                 with:
-                    client-id: ${{ secrets.MACHINE_IDENTITY_CLIENT_ID }} # Update this to your own Github references
-                    client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }} # Update this to your own Github references
+                    client-id: ${{ secrets.MACHINE_IDENTITY_CLIENT_ID }}
+                    client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }}
                     env-slug: "prod"
-                    project-slug: "compose-table-z-aw-w"
-                    secret-path: "/publish"
+                    project-slug: "secrets"
+                    secret-path: "/compose-table/environment"
+                    export-type: "file"
+                    file-path: ".env"
+                    domain: https://eu.infisical.com
+
+            -   name: Publish credentials
+                uses: Infisical/secrets-action@v1.0.9
+                with:
+                    client-id: ${{ secrets.MACHINE_IDENTITY_CLIENT_ID }}
+                    client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }}
+                    env-slug: "prod"
+                    project-slug: "secrets"
+                    secret-path: "/compose-table/publish"
                     domain: https://eu.infisical.com
 
             -   name: Prepare Release Version
                 id: prepareVersion
                 run: |
                     RESULT=$(echo ${{ github.ref_name }} | sed 's/table.//g')
-                    echo "versionName=$RESULT" >> $GITHUB_OUTPUT    
-
-            -   name: Environment
-                run: |
-                    touch .env
                     echo "VERSION_NAME=${{ steps.prepareVersion.outputs.versionName }}" >> .env
-                    
+
             -   name: Publish to MavenCentral
                 run: ./gradlew :compose-data-table:publishToMavenCentral --stacktrace --quiet

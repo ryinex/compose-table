@@ -13,7 +13,7 @@ rootProject.file(".env").readLines().forEach { line ->
     if (line.isNotBlank()) {
         val splits = line.split("=")
         val env = splits[0] to splits.subList(1, splits.size).joinToString("")
-        System.setProperty(env.first, env.second)
+        System.setProperty(env.first, env.second.removeSurrounding("\"").removeSurrounding("'"))
     }
 }
 
