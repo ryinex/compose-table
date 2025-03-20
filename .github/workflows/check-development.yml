@@ -41,13 +41,13 @@ jobs:
             -   name: Environment
                 uses: Infisical/secrets-action@v1.0.9
                 with:
-                    client-id: ${{ secrets.MACHINE_IDENTITY_CLIENT_ID }} # Update this to your own Github references
-                    client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }} # Update this to your own Github references
+                    client-id: ${{ secrets.MACHINE_IDENTITY_CLIENT_ID }}
+                    client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }}
                     env-slug: "dev"
                     project-slug: "secrets"
                     secret-path: "/compose-table/environment"
                     export-type: "file"
-                    file-path: ".env"
+                    file-output-path: ".env"
                     domain: https://eu.infisical.com
 
             -   name: Ktlint
