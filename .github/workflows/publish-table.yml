@@ -43,7 +43,7 @@ jobs:
                     project-slug: "secrets"
                     secret-path: "/compose-table/environment"
                     export-type: "file"
-                    file-path: ".env"
+                    file-output-path: ".env"
                     domain: https://eu.infisical.com
 
             -   name: Publish credentials
@@ -60,7 +60,7 @@ jobs:
                 id: prepareVersion
                 run: |
                     RESULT=$(echo ${{ github.ref_name }} | sed 's/table.//g')
-                    echo "VERSION_NAME=${{ steps.prepareVersion.outputs.versionName }}" >> .env
+                    echo "VERSION_NAME=$RESULT" >> .env
 
             -   name: Publish to MavenCentral
                 run: ./gradlew :compose-data-table:publishToMavenCentral --stacktrace --quiet
