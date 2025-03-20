@@ -17,11 +17,15 @@ internal data class DataTableColumnWidths(
     var headerCellWidth: Int,
     var firstCellWidth: Int,
     var largestRegularCellWidth: Int,
-    var latestViewPortWidth: Int
+    var lastViewPortWidth: Int,
+    var currentViewPortWidth: Int
 ) {
-    constructor() : this(0, 0, 0, 0)
+    constructor() : this(0, 0, 0, 0, 0)
 
+    val isInitialized get() = headerCellWidth != 0 && firstCellWidth != 0
     val smallest get() = minOf(headerCellWidth, firstCellWidth, largestRegularCellWidth)
+
+    fun isStaled(other: Int) = other <= largestRegularCellWidth || other == lastViewPortWidth || other <= currentViewPortWidth
 }
 
 internal data class DataTableColumnViewPort(
@@ -170,11 +174,7 @@ sealed class DataTableColumn<VALUE, DATA : Any>(
     }
 
     private fun updateLargestWidth(width: Int, isHeader: Boolean, itemIndex: Int, itemsSize: Int): Boolean {
-        if (
-            width <= widths.largestRegularCellWidth ||
-            width <= view.value.width ||
-            width == widths.latestViewPortWidth
-        ) {
+        if (widths.isInitialized && widths.isStaled(width)) {
             return false
         }
         // println("cell: ${cellIndex}, width: $width, largestRegularCellWidth: ${widths.largestRegularCellWidth}")
@@ -182,37 +182,36 @@ sealed class DataTableColumn<VALUE, DATA : Any>(
         if (isHeader && widths.headerCellWidth == 0) {
             widths.headerCellWidth = width
         } else if (!isHeader && itemIndex == 0 && widths.firstCellWidth == 0) {
-            widths.firstCellWidth =
-                width
+            widths.firstCellWidth = width
         }
         if (widths.headerCellWidth == 0 || (widths.firstCellWidth == 0 && itemsSize > 1)) return false
 
         if (width > widths.largestRegularCellWidth && !isDragging) {
-            widths.largestRegularCellWidth =
-                maxOf(
-                    width,
-                    widths.largestRegularCellWidth,
-                    widths.headerCellWidth,
-                    widths.firstCellWidth
-                )
+            widths.largestRegularCellWidth = maxOf(
+                width,
+                widths.largestRegularCellWidth,
+                widths.headerCellWidth,
+                widths.firstCellWidth
+            )
         }
-
         setViewPortWidth(widths.largestRegularCellWidth)
         return true
     }
 
     fun setViewPortWidth(width: Int) {
-        widths.latestViewPortWidth = this.view.value.width
+        widths.lastViewPortWidth = this.view.value.width
+        widths.currentViewPortWidth = width
         this.view.value = this.view.value.copy(width = width)
     }
 
     private fun setViewPortLayout(layout: DataTableColumnLayout) {
-        widths.latestViewPortWidth = this.view.value.width
+        widths.lastViewPortWidth = this.view.value.width
         this.view.value = this.view.value.copy(layout = layout)
     }
 
     private fun setViewPort(width: Int, weight: Float, layout: DataTableColumnLayout) {
-        widths.latestViewPortWidth = this.view.value.width
+        widths.lastViewPortWidth = this.view.value.width
+        widths.currentViewPortWidth = width
         this.view.value = this.view.value.copy(width = width, weight = weight, layout = layout)
         with(table) { views.ensureFillViewPort(true) }
     }
