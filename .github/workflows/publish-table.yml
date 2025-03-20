@@ -60,11 +60,7 @@ jobs:
                 id: prepareVersion
                 run: |
                     RESULT=$(echo ${{ github.ref_name }} | sed 's/table.//g')
-                    echo "versionName=$RESULT" >> $GITHUB_OUTPUT    
-
-            -   name: Version name
-                run: |
                     echo "VERSION_NAME=${{ steps.prepareVersion.outputs.versionName }}" >> .env
-                    
+
             -   name: Publish to MavenCentral
                 run: ./gradlew :compose-data-table:publishToMavenCentral --stacktrace --quiet
