@@ -82,7 +82,6 @@ internal fun <VALUE, DATA : Any> TextEditCell(
     val itemsModifier =
         remember {
             Modifier
-                .fillMaxWidth()
                 .onFocusChanged {
                     if (!enableFocusChanges) return@onFocusChanged
                     if (
