@@ -92,8 +92,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
     val isHovered = interactionSource.collectIsHoveredAsState().value
     val isChildFocused = cell.properties.childInteractionSource.collectIsFocusedAsState().value
     Surface(
-        modifier =
-        config.modifier
+        modifier = config.modifier
             .CellModifier(columnViewPortConfig)
             .onGloballyPositioned {
                 cellProperties.height = it.size.height
@@ -127,14 +126,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
         color = config.backgroundColor ?: MaterialTheme.colorScheme.surface,
         contentColor = config.color ?: MaterialTheme.colorScheme.onSurface,
         shape = config.shape,
-        tonalElevation =
-        if (isFocused) {
-            16.dp
-        } else if (isHovered) {
-            1.dp
-        } else {
-            0.dp
-        }
+        tonalElevation = if (isFocused) 16.dp else if (isHovered) 1.dp else 0.dp
     ) {
         Box {
             Provided(config) { cell.view(cell) }
@@ -206,8 +198,7 @@ internal fun <VALUE, DATA : Any> TextEditableCell(
         )
     } else {
         TextViewCell(
-            modifier =
-            modifier
+            modifier = modifier
                 .combinedClickable(
                     interactionSource = null,
                     indication = null,
@@ -238,8 +229,7 @@ private fun BoxScope.ResizeDragHandle(
     onDoubleClickDrag: () -> Unit
 ) {
     VerticalDivider(
-        modifier =
-        Modifier
+        modifier = Modifier
             .align(Alignment.CenterEnd)
             .draggable(
                 state = dragState,
@@ -265,7 +255,7 @@ fun BoxScope.Provided(config: DataTableCellConfig, content: @Composable () -> Un
     }
     if (isForceLtr) provides.add(LocalLayoutDirection provides LayoutDirection.Ltr)
 
-    Box(modifier = Modifier.padding(padding).align(Alignment.CenterStart)) {
+    Box(modifier = Modifier.padding(padding).align(config.alignment)) {
         if (provides.isEmpty()) {
             content()
         } else {
@@ -285,10 +275,7 @@ private fun Modifier.keyNavigation(
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionDown) {
             return@onKeyEvent location.moveDown() != null && focusManager.moveFocus(FocusDirection.Down)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionLeft) {
-            return@onKeyEvent location.movePrevious() != null &&
-                focusManager.moveFocus(
-                    FocusDirection.Left
-                )
+            return@onKeyEvent location.movePrevious() != null && focusManager.moveFocus(FocusDirection.Left)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionRight) {
             return@onKeyEvent location.moveNext() != null && focusManager.moveFocus(FocusDirection.Right)
         }
@@ -308,14 +295,10 @@ private fun Modifier.keyNavigation(location: DataTableCellLocation, navTo: (Data
             val navigation = location.moveDown() ?: return@onKeyEvent false
             navTo(navigation)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionLeft) {
-            val navigation =
-                (if (isLtr) location.movePrevious() else location.moveNext())
-                    ?: return@onKeyEvent false
+            val navigation = (if (isLtr) location.movePrevious() else location.moveNext()) ?: return@onKeyEvent false
             navTo(navigation)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionRight) {
-            val navigation =
-                (if (isLtr) location.moveNext() else location.movePrevious())
-                    ?: return@onKeyEvent false
+            val navigation = (if (isLtr) location.moveNext() else location.movePrevious()) ?: return@onKeyEvent false
             navTo(navigation)
         }
 
