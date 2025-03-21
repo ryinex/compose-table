@@ -50,6 +50,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.ryinex.kotlin.datatable.data.DataTableCell
@@ -210,14 +211,20 @@ internal fun <VALUE, DATA : Any> TextEditableCell(
                 .onFocusChanged { if (it.isFocused) isEditMode = true }
                 .focusable(interactionSource = cellProperties.childInteractionSource),
             text = viewText,
-            textStyle = textStyle
+            textStyle = textStyle,
+            textAlign = config.textAlign
         )
     }
 }
 
 @Composable
-internal fun TextViewCell(modifier: Modifier = Modifier, text: String, textStyle: TextStyle = LocalTextStyle.current) {
-    Text(modifier = modifier, text = text, style = textStyle)
+internal fun TextViewCell(
+    modifier: Modifier = Modifier,
+    text: String,
+    textAlign: TextAlign?,
+    textStyle: TextStyle = LocalTextStyle.current
+) {
+    Text(modifier = modifier, text = text, style = textStyle, textAlign = textAlign)
 }
 
 @OptIn(ExperimentalFoundationApi::class)

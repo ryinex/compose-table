@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 
 data class DataTableConfig(
     val verticalSpacing: Int,
@@ -167,7 +168,8 @@ data class DataTableCellConfig(
     val textStyle: TextStyle?,
     val isForceLtr: Boolean,
     val enterFocusChild: Boolean,
-    val alignment: Alignment
+    val alignment: Alignment,
+    val textAlign: TextAlign?
 ) {
     companion object {
         internal fun default(
@@ -179,7 +181,8 @@ data class DataTableCellConfig(
             textStyle: TextStyle? = null,
             isForceLtr: Boolean = false,
             enterFocusChild: Boolean = true,
-            alignment: Alignment = Alignment.CenterStart
+            alignment: Alignment = Alignment.CenterStart,
+            textAlign: TextAlign? = null
         ): DataTableCellConfig {
             return DataTableCellConfig(
                 modifier = modifier,
@@ -190,7 +193,8 @@ data class DataTableCellConfig(
                 textStyle = textStyle,
                 isForceLtr = isForceLtr,
                 enterFocusChild = enterFocusChild,
-                alignment = alignment
+                alignment = alignment,
+                textAlign = textAlign
             )
         }
     }
