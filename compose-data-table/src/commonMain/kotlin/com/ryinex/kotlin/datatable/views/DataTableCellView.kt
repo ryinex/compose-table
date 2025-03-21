@@ -127,7 +127,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
         color = config.backgroundColor ?: MaterialTheme.colorScheme.surface,
         contentColor = config.color ?: MaterialTheme.colorScheme.onSurface,
         shape = config.shape,
-        tonalElevation = if (isFocused) 16.dp else if (isHovered) 1.dp else 0.dp
+        tonalElevation = if (isFocused || isChildFocused) 16.dp else if (isHovered) 1.dp else 0.dp
     ) {
         Box {
             Provided(config) { cell.view(cell) }
@@ -160,12 +160,11 @@ internal fun <VALUE, DATA : Any> TextEditableCell(
     val cellTextStyle = remember(config) { config.textStyle } ?: LocalTextStyle.current
     val cellProperties = remember(cell) { cell.properties }
     var viewText by remember(text) { mutableStateOf(text) }
-    val textStyle =
-        remember(viewText, text) {
-            cellTextStyle.copy(
-                color = if (viewText == text) cellTextStyle.color else cellTextStyle.color.copy(alpha = 0.7f)
-            )
-        }
+    val textStyle = remember(viewText, text) {
+        cellTextStyle.copy(
+            color = if (viewText == text) cellTextStyle.color else cellTextStyle.color.copy(alpha = 0.7f)
+        )
+    }
     var isEditMode by remember { mutableStateOf(false) }
     if (isEditMode) {
         TextEditCell(
