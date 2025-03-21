@@ -262,7 +262,7 @@ internal class ComposeDataTableColumn<VALUE, DATA : Any> constructor(
     config = config,
     cell = cell,
     value = value,
-    name = mutableStateOf(name)
+    name = mutableStateOf(name.ifBlank { " " })
 )
 
 internal class ComparableDataTableColumn<VALUE : Comparable<VALUE>, DATA : Any>(
@@ -279,7 +279,7 @@ internal class ComparableDataTableColumn<VALUE : Comparable<VALUE>, DATA : Any>(
     config = config,
     cell = cell,
     value = value,
-    name = mutableStateOf("$name  •")
+    name = mutableStateOf("${name.ifBlank { " " }}  •")
 ) {
     private val originalName = name
 
