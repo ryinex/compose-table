@@ -105,7 +105,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
             .moveFocusOnTab()
             .keyNavigation(location = cell.properties.location) { onNavigate(cellProperties, it) }
             .onEnterPress(config.enterFocusChild) {
-                cellProperties.childFocusRequester.requestFocus()
+                runCatching { cellProperties.childFocusRequester.requestFocus() }
             }
             .hoverable(interactionSource = interactionSource, enabled = enableInteractions)
             .focusable(
