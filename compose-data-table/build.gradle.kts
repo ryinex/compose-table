@@ -18,6 +18,7 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(libs.versions.java.get()))
         }
+        publishLibraryVariants("release")
     }
 
     listOf(
@@ -102,7 +103,7 @@ android {
             consumerProguardFiles("proguard-rules.pro")
         }
         getByName("release") {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
