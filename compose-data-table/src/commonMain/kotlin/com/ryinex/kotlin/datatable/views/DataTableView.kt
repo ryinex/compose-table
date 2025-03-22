@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.ryinex.kotlin.datatable.data.DataTable
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 
 @Composable
 fun <T : Any> DataTableView(modifier: Modifier = Modifier, table: DataTable<T>) {
@@ -67,12 +65,7 @@ private fun <T : Any> LazyListScope.ActualDataTable(horizontalScrollState: Scrol
 @Composable
 private fun InitViewPort(table: DataTable<*>) {
     LaunchedEffect(table.lazyState) {
-        snapshotFlow { table.lazyState.layoutInfo }
-            .onStart { println("onStart") }
-            .onCompletion { println("onCompletion") }
-            .collect {
-                table.rows.setCellsMap(table.lazyState)
-            }
+        snapshotFlow { table.lazyState.layoutInfo }.collect { table.rows.setCellsMap(table.lazyState) }
     }
     Box(
         modifier = Modifier
