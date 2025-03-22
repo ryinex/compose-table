@@ -1,6 +1,6 @@
-package com.ryinex.kotlin.csvviewer.presentation.models
+package com.ryinex.kotlin.csv
 
-internal data class CSVFile(
+internal data class CsvFile(
     var name: String,
     val isFirstHeader: Boolean,
     val content: List<MutableMap<String, String>>
@@ -14,16 +14,5 @@ internal data class CSVFile(
         val list = listOf(headers) + rows
 
         return list.joinToString("\n") { it.map { "\"$it\"" }.joinToString(",") }
-    }
-
-    companion object {
-        fun empty(name: String = "Untitled"): CSVFile {
-            val list =
-                (0..99).map {
-                    val list = ('A'..'Z').map { it.toString() to " " }
-                    mutableMapOf(*list.toTypedArray())
-                }
-            return CSVFile(name, true, list)
-        }
     }
 }
