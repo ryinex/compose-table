@@ -2,7 +2,6 @@ package com.ryinex.kotlin.csvviewer.presentation
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -237,19 +236,18 @@ private fun UnWrapText(modifier: Modifier = Modifier, text: String) {
 
         Box(modifier = if (isLessThanMin) Modifier.fillMaxWidth() else modifier, contentAlignment = Alignment.Center) {
             Box(
-                modifier =
-                    Modifier.fillMaxWidth().onGloballyPositioned {
-                        val result = it.size.width < fitWidth
-                        val isBroken = it.size.width <= breakingViewport
-                        val equalViewport = it.size.width == viewportWidth
+                modifier = Modifier.fillMaxWidth().onGloballyPositioned {
+                    val result = it.size.width < fitWidth
+                    val isBroken = it.size.width <= breakingViewport
+                    val equalViewport = it.size.width == viewportWidth
 
-                        val enable = !equalViewport || !isBroken
+                    val enable = !equalViewport || !isBroken
 
-                        if (result != isLessThanMin && enable) {
-                            if (result && breakingViewport == 0) breakingViewport = viewportWidth
-                            isLessThanMin = result
-                        }
+                    if (result != isLessThanMin && enable) {
+                        if (result && breakingViewport == 0) breakingViewport = viewportWidth
+                        isLessThanMin = result
                     }
+                }
             )
 
             Text(

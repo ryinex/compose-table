@@ -89,12 +89,15 @@ class DataTable<DATA : Any>(
         val viewPortWidth = viewport.value.width
         val requiredSum = viewPortWidth - removes
         val sum = columns
-                .slice(range)
-                .filter { it.view.value.layout != DataTableColumnLayout.FixedFree }
-                .sumOf { it.largestWidth }
+            .slice(range)
+            .filter { it.view.value.layout != DataTableColumnLayout.FixedFree }
+            .sumOf { it.largestWidth }
         if (sum >= requiredSum) return
 
-        println("viewport: ${viewport.value.width}, sum: $sum, ${sum >= requiredSum} requiredSum: $requiredSum, removes: $removes")
+        println(
+            "viewport: ${viewport.value.width}, sum: $sum, ${sum >= requiredSum}," +
+                " requiredSum: $requiredSum, removes: $removes"
+        )
 
 //        val difference = requiredSum - sum
 //        val increase = difference / source.size
