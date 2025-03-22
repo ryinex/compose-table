@@ -1,6 +1,8 @@
 package com.ryinex.kotlin.csvviewer.presentation
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,7 +90,7 @@ fun App() {
             mutableStateOf(table.copy(column = column.copy(cell = cell)))
         }
         Scaffold(
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(4.dp).clickable(interactionSource = null, indication = null) { },
             floatingActionButton = { if (content != null) FAB(isLocked) }
         ) {
             Column {
