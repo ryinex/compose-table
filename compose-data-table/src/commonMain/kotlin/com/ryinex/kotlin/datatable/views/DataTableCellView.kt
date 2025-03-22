@@ -50,6 +50,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.ryinex.kotlin.datatable.data.DataTableCell
@@ -92,8 +93,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
     val isHovered = interactionSource.collectIsHoveredAsState().value
     val isChildFocused = cell.properties.childInteractionSource.collectIsFocusedAsState().value
     Surface(
-        modifier =
-        config.modifier
+        modifier = config.modifier
             .CellModifier(columnViewPortConfig)
             .onGloballyPositioned {
                 cellProperties.height = it.size.height
@@ -105,7 +105,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
             .moveFocusOnTab()
             .keyNavigation(location = cell.properties.location) { onNavigate(cellProperties, it) }
             .onEnterPress(config.enterFocusChild) {
-                cellProperties.childFocusRequester.requestFocus()
+                runCatching { cellProperties.childFocusRequester.requestFocus() }
             }
             .hoverable(interactionSource = interactionSource, enabled = enableInteractions)
             .focusable(
@@ -127,14 +127,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
         color = config.backgroundColor ?: MaterialTheme.colorScheme.surface,
         contentColor = config.color ?: MaterialTheme.colorScheme.onSurface,
         shape = config.shape,
-        tonalElevation =
-        if (isFocused) {
-            16.dp
-        } else if (isHovered) {
-            1.dp
-        } else {
-            0.dp
-        }
+        tonalElevation = if (isFocused || isChildFocused) 16.dp else if (isHovered) 1.dp else 0.dp
     ) {
         Box {
             Provided(config) { cell.view(cell) }
@@ -167,12 +160,11 @@ internal fun <VALUE, DATA : Any> TextEditableCell(
     val cellTextStyle = remember(config) { config.textStyle } ?: LocalTextStyle.current
     val cellProperties = remember(cell) { cell.properties }
     var viewText by remember(text) { mutableStateOf(text) }
-    val textStyle =
-        remember(viewText, text) {
-            cellTextStyle.copy(
-                color = if (viewText == text) cellTextStyle.color else cellTextStyle.color.copy(alpha = 0.7f)
-            )
-        }
+    val textStyle = remember(viewText, text) {
+        cellTextStyle.copy(
+            color = if (viewText == text) cellTextStyle.color else cellTextStyle.color.copy(alpha = 0.7f)
+        )
+    }
     var isEditMode by remember { mutableStateOf(false) }
     if (isEditMode) {
         TextEditCell(
@@ -206,8 +198,7 @@ internal fun <VALUE, DATA : Any> TextEditableCell(
         )
     } else {
         TextViewCell(
-            modifier =
-            modifier
+            modifier = modifier
                 .combinedClickable(
                     interactionSource = null,
                     indication = null,
@@ -219,14 +210,20 @@ internal fun <VALUE, DATA : Any> TextEditableCell(
                 .onFocusChanged { if (it.isFocused) isEditMode = true }
                 .focusable(interactionSource = cellProperties.childInteractionSource),
             text = viewText,
-            textStyle = textStyle
+            textStyle = textStyle,
+            textAlign = config.textAlign
         )
     }
 }
 
 @Composable
-internal fun TextViewCell(modifier: Modifier = Modifier, text: String, textStyle: TextStyle = LocalTextStyle.current) {
-    Text(modifier = modifier, text = text, style = textStyle)
+internal fun TextViewCell(
+    modifier: Modifier = Modifier,
+    text: String,
+    textAlign: TextAlign?,
+    textStyle: TextStyle = LocalTextStyle.current
+) {
+    Text(modifier = modifier, text = text, style = textStyle, textAlign = textAlign)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -238,8 +235,7 @@ private fun BoxScope.ResizeDragHandle(
     onDoubleClickDrag: () -> Unit
 ) {
     VerticalDivider(
-        modifier =
-        Modifier
+        modifier = Modifier
             .align(Alignment.CenterEnd)
             .draggable(
                 state = dragState,
@@ -265,7 +261,7 @@ fun BoxScope.Provided(config: DataTableCellConfig, content: @Composable () -> Un
     }
     if (isForceLtr) provides.add(LocalLayoutDirection provides LayoutDirection.Ltr)
 
-    Box(modifier = Modifier.padding(padding).align(Alignment.CenterStart)) {
+    Box(modifier = Modifier.padding(padding).align(config.alignment)) {
         if (provides.isEmpty()) {
             content()
         } else {
@@ -285,10 +281,7 @@ private fun Modifier.keyNavigation(
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionDown) {
             return@onKeyEvent location.moveDown() != null && focusManager.moveFocus(FocusDirection.Down)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionLeft) {
-            return@onKeyEvent location.movePrevious() != null &&
-                focusManager.moveFocus(
-                    FocusDirection.Left
-                )
+            return@onKeyEvent location.movePrevious() != null && focusManager.moveFocus(FocusDirection.Left)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionRight) {
             return@onKeyEvent location.moveNext() != null && focusManager.moveFocus(FocusDirection.Right)
         }
@@ -308,14 +301,10 @@ private fun Modifier.keyNavigation(location: DataTableCellLocation, navTo: (Data
             val navigation = location.moveDown() ?: return@onKeyEvent false
             navTo(navigation)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionLeft) {
-            val navigation =
-                (if (isLtr) location.movePrevious() else location.moveNext())
-                    ?: return@onKeyEvent false
+            val navigation = (if (isLtr) location.movePrevious() else location.moveNext()) ?: return@onKeyEvent false
             navTo(navigation)
         } else if (it.type == KeyEventType.KeyDown && it.key == Key.DirectionRight) {
-            val navigation =
-                (if (isLtr) location.moveNext() else location.movePrevious())
-                    ?: return@onKeyEvent false
+            val navigation = (if (isLtr) location.moveNext() else location.movePrevious()) ?: return@onKeyEvent false
             navTo(navigation)
         }
 
