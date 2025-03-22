@@ -56,40 +56,37 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     var isDarkTheme by remember { mutableStateOf(false) }
-    val isLocked = remember { mutableStateOf(false) }
-    val backgroundColor = MaterialTheme.colorScheme.background
-    val contentColor = MaterialTheme.colorScheme.onBackground
-    var content by remember { mutableStateOf<CSVLoadType?>(null) }
-    var editConfig by remember {
-        val config =
-            DataTableEditTextConfig.default<Any, Any>(
+    AppTheme(useDarkTheme = isDarkTheme) {
+        val isLocked = remember { mutableStateOf(false) }
+        val backgroundColor = MaterialTheme.colorScheme.background
+        val contentColor = MaterialTheme.colorScheme.onBackground
+        var content by remember { mutableStateOf<CSVLoadType?>(null) }
+        var editConfig by remember {
+            val config = DataTableEditTextConfig.default<Any, Any>(
                 isEditable = true,
-                mobileBrowserEditConfig =
-                DataTableMobileTextEdit.Dialog(
+                mobileBrowserEditConfig = DataTableMobileTextEdit.Dialog(
                     textFieldHint = { "Your input" },
                     content = { field, cancel, confirm ->
                         MobileChangesDialog(textField = field, onCancel = cancel, onSave = confirm)
                     }
                 )
             )
-        mutableStateOf(config)
-    }
-    var config by remember {
-        val table =
-            DataTableConfig.default(
+            mutableStateOf(config)
+        }
+        var config by remember {
+            val table = DataTableConfig.default(
                 backgroundColor = backgroundColor,
                 color = contentColor
             )
-        val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepInitial)
-        val cell =
-            column.cell.copy(
+            val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepInitial)
+            val cell = column.cell.copy(
                 enterFocusChild = true,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor)
             )
 
-        mutableStateOf(table.copy(column = column.copy(cell = cell)))
-    }
-    AppTheme(useDarkTheme = isDarkTheme) {
+            mutableStateOf(table.copy(column = column.copy(cell = cell)))
+        }
         Scaffold(
             modifier = Modifier.padding(4.dp),
             floatingActionButton = { if (content != null) FAB(isLocked) }
@@ -224,8 +221,7 @@ private fun UnWrapText(modifier: Modifier = Modifier, text: String) {
             Text(
                 modifier = Modifier.onGloballyPositioned { fitWidth = it.size.width + 2 },
                 text = text,
-                style =
-                MaterialTheme.typography.headlineLarge.copy(
+                style = MaterialTheme.typography.headlineLarge.copy(
                     fontSize = MaterialTheme.typography.headlineLarge.fontSize * 2f
                 )
             )
@@ -240,23 +236,22 @@ private fun UnWrapText(modifier: Modifier = Modifier, text: String) {
         Box(modifier = if (isLessThanMin) Modifier.fillMaxWidth() else modifier, contentAlignment = Alignment.Center) {
             Box(
                 modifier =
-                Modifier.fillMaxWidth().onGloballyPositioned {
-                    val result = it.size.width < fitWidth
-                    val isBroken = it.size.width <= breakingViewport
-                    val equalViewport = it.size.width == viewportWidth
+                    Modifier.fillMaxWidth().onGloballyPositioned {
+                        val result = it.size.width < fitWidth
+                        val isBroken = it.size.width <= breakingViewport
+                        val equalViewport = it.size.width == viewportWidth
 
-                    val enable = !equalViewport || !isBroken
+                        val enable = !equalViewport || !isBroken
 
-                    if (result != isLessThanMin && enable) {
-                        if (result && breakingViewport == 0) breakingViewport = viewportWidth
-                        isLessThanMin = result
+                        if (result != isLessThanMin && enable) {
+                            if (result && breakingViewport == 0) breakingViewport = viewportWidth
+                            isLessThanMin = result
+                        }
                     }
-                }
             )
 
             Text(
-                modifier =
-                Modifier.onGloballyPositioned {
+                modifier = Modifier.onGloballyPositioned {
                     if (it.size.width > fitWidth) {
                         breakingViewport = 0
                         fitWidth = it.size.width + 2

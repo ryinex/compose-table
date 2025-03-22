@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.ryinex.kotlin.datatable.data.DataTable
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 
 @Composable
 fun <T : Any> DataTableView(modifier: Modifier = Modifier, table: DataTable<T>) {
@@ -33,8 +35,6 @@ fun <T : Any> DataTableView(modifier: Modifier = Modifier, table: DataTable<T>) 
                     state = table.lazyState,
                     verticalArrangement = Arrangement.spacedBy(table.config.value.verticalSpacing.densityDp)
                 ) {
-                    Viewport(table)
-
                     DataTableHeaderRow(table = table, scrollableState = scrollableState, isEmbedded = false)
 
                     ActualDataTable(scrollableState, table)
@@ -50,8 +50,6 @@ fun <T : Any> DataTableView(modifier: Modifier = Modifier, table: DataTable<T>) 
 
 @Suppress("FunctionName")
 fun <T : Any> LazyListScope.EmbeddedDataTableView(horizontalScrollState: ScrollState, table: DataTable<T>) {
-    Viewport(table)
-
     DataTableHeaderRow(table = table, scrollableState = horizontalScrollState, isEmbedded = true)
 
     ActualDataTable(horizontalScrollState, table)
@@ -66,24 +64,23 @@ private fun <T : Any> LazyListScope.ActualDataTable(horizontalScrollState: Scrol
     }
 }
 
-@Suppress("FunctionName")
-@OptIn(ExperimentalFoundationApi::class)
-private fun LazyListScope.Viewport(table: DataTable<*>) {
-    stickyHeader {
-        LaunchedEffect(table.lazyState) {
-            snapshotFlow { table.lazyState.layoutInfo }.collect {
+@Composable
+private fun InitViewPort(table: DataTable<*>) {
+    LaunchedEffect(table.lazyState) {
+        snapshotFlow { table.lazyState.layoutInfo }
+            .onStart { println("onStart") }
+            .onCompletion { println("onCompletion") }
+            .collect {
                 table.rows.setCellsMap(table.lazyState)
             }
-        }
-        Box(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { table.setViewport(it.size) }
-                .focusable(false)
-                .focusProperties { canFocus = false }
-        )
     }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { table.setViewport(it.size) }
+            .focusable(false)
+            .focusProperties { canFocus = false }
+    )
 }
 
 @Suppress("FunctionName")
@@ -91,11 +88,15 @@ private fun LazyListScope.Viewport(table: DataTable<*>) {
 private fun LazyListScope.DataTableHeaderRow(table: DataTable<*>, scrollableState: ScrollState, isEmbedded: Boolean) {
     if (table.config.value.isHeadered && table.config.value.isHeaderSticky && !isEmbedded) {
         stickyHeader(key = table.headersTag) {
+            InitViewPort(table)
+
             NoScrollAnimation {
                 DataTableRowView(scrollState = scrollableState, table = table, cells = table.headers())
             }
         }
     } else if (table.config.value.isHeadered && (!table.config.value.isHeaderSticky || isEmbedded)) {
+        stickyHeader { InitViewPort(table) }
+
         item(key = table.headersTag) {
             NoScrollAnimation {
                 DataTableRowView(scrollState = scrollableState, table = table, cells = table.headers())
