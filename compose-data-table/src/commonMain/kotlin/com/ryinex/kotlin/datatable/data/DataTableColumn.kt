@@ -59,34 +59,31 @@ sealed class DataTableColumn<VALUE, DATA : Any>(
         )
 
     fun header(onWidthChanged: (Boolean) -> Unit): @Composable RowScope.() -> Unit = {
-        val location =
-            remember(table.columns) {
-                table.cellLocation(0, table.columns.indexOf(this@DataTableColumn), true)
-            }
+        val location = remember(table.columns) {
+            table.cellLocation(0, table.columns.indexOf(this@DataTableColumn), true)
+        }
         val properties = DataTableCellProperties.create(location = location)
         val currentTextStyle = LocalTextStyle.current
-        val cellConfig =
-            remember {
-                if (tag != DataTable.INDEX_COLUMN_TAG) return@remember table.config.value.defaultHeaderConfig
-                val original = table.config.value.defaultHeaderConfig
+        val cellConfig = remember {
+            if (tag != DataTable.INDEX_COLUMN_TAG) return@remember table.config.value.defaultHeaderConfig
+            val original = table.config.value.defaultHeaderConfig
 
-                table.config.value.defaultHeaderConfig
-                    .copy(
-                        color = Color.Transparent,
-                        textStyle = (original.textStyle ?: currentTextStyle).copy(color = Color.Transparent)
-                    )
-            }
-        val textStyle = remember { cellConfig.textStyle } ?: LocalTextStyle.current
-        val cell =
-            remember(location, name.value) {
-                cell(
-                    data = Any(),
-                    value = name.value,
-                    properties = properties,
-                    config = cellConfig,
-                    view = { value -> TextViewCell(text = value, textStyle = textStyle) }
+            table.config.value.defaultHeaderConfig
+                .copy(
+                    color = Color.Transparent,
+                    textStyle = (original.textStyle ?: currentTextStyle).copy(color = Color.Transparent)
                 )
-            }
+        }
+        val textStyle = remember { cellConfig.textStyle } ?: LocalTextStyle.current
+        val cell = remember(location, name.value) {
+            cell(
+                data = Any(),
+                value = name.value,
+                properties = properties,
+                config = cellConfig,
+                view = { value -> TextViewCell(text = value, textStyle = textStyle, textAlign = cellConfig.textAlign) }
+            )
+        }
 
         LaunchedEffect(cell) { table.rows.setCell(cell) }
 
@@ -123,10 +120,9 @@ sealed class DataTableColumn<VALUE, DATA : Any>(
     }
 
     fun cell(index: Int, data: DATA, onWidthChanged: () -> Unit): @Composable RowScope.() -> Unit = {
-        val location =
-            remember(index, table.columns) {
-                table.cellLocation(index, table.columns.indexOf(this@DataTableColumn), false)
-            }
+        val location = remember(index, table.columns) {
+            table.cellLocation(index, table.columns.indexOf(this@DataTableColumn), false)
+        }
         val properties = DataTableCellProperties.create(location = location)
         val cell = remember(location, data) { cell(location, data, properties) }
         val config = remember(index, cell.state.value) { cell.config(cell.state.value) }
@@ -165,13 +161,12 @@ sealed class DataTableColumn<VALUE, DATA : Any>(
     }
 
     private fun onWidth(width: Int, isHeader: Boolean, itemIndex: Int, onWidthChanged: () -> Unit) {
-        val updated =
-            updateLargestWidth(
-                width = width,
-                isHeader = isHeader,
-                itemIndex = itemIndex,
-                itemsSize = table.rows.state.value.size
-            )
+        val updated = updateLargestWidth(
+            width = width,
+            isHeader = isHeader,
+            itemIndex = itemIndex,
+            itemsSize = table.rows.state.value.size
+        )
         if (updated) onWidthChanged()
     }
 

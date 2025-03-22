@@ -14,7 +14,7 @@ internal fun <DATA : Any> DataTable<DATA>.index(): DataTable<DATA> {
             presentation.copy(isForceLtr = true)
         },
         value = { _, _ -> },
-        content = { index, _, _ -> TextViewCell(text = "${index.dataRelativeRowIndex + 1}") }
+        content = { index, _, _ -> TextViewCell(text = "${index.dataRelativeRowIndex + 1}", textAlign = null) }
     )
 }
 

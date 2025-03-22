@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 
 data class DataTableConfig(
     val verticalSpacing: Int,
@@ -31,8 +33,8 @@ data class DataTableConfig(
     companion object {
         @Composable
         fun default(
-            verticalSpacing: Int = 2,
-            horizontalSpacing: Int = 2,
+            verticalSpacing: Int = 0,
+            horizontalSpacing: Int = 0,
             isScrollable: Boolean = true,
             isIndexed: Boolean = true,
             isHeadered: Boolean = true,
@@ -165,7 +167,9 @@ data class DataTableCellConfig(
     val padding: PaddingValues,
     val textStyle: TextStyle?,
     val isForceLtr: Boolean,
-    val enterFocusChild: Boolean
+    val enterFocusChild: Boolean,
+    val alignment: Alignment,
+    val textAlign: TextAlign?
 ) {
     companion object {
         internal fun default(
@@ -176,7 +180,9 @@ data class DataTableCellConfig(
             padding: PaddingValues = PaddingValues(),
             textStyle: TextStyle? = null,
             isForceLtr: Boolean = false,
-            enterFocusChild: Boolean = false
+            enterFocusChild: Boolean = true,
+            alignment: Alignment = Alignment.CenterStart,
+            textAlign: TextAlign? = null
         ): DataTableCellConfig {
             return DataTableCellConfig(
                 modifier = modifier,
@@ -186,7 +192,9 @@ data class DataTableCellConfig(
                 padding = padding,
                 textStyle = textStyle,
                 isForceLtr = isForceLtr,
-                enterFocusChild = enterFocusChild
+                enterFocusChild = enterFocusChild,
+                alignment = alignment,
+                textAlign = textAlign
             )
         }
     }

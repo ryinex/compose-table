@@ -1,6 +1,5 @@
 package com.ryinex.kotlin.datatable.views
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
@@ -82,7 +81,6 @@ internal fun <VALUE, DATA : Any> TextEditCell(
     val itemsModifier =
         remember {
             Modifier
-                .fillMaxWidth()
                 .onFocusChanged {
                     if (!enableFocusChanges) return@onFocusChanged
                     if (
