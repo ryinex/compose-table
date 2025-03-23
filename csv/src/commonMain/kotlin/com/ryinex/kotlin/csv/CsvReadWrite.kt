@@ -24,7 +24,7 @@ internal fun csvLines(content: String): List<MutableMap<String, String>> {
     val leader = lines.firstOrNull()?.let { line(it) } ?: return emptyList()
 
     val mapped = lines
-        .map { line(it).ensureSize(leader.size) }
+        .map { line(it).ensureSize(size = leader.size, default = "") }
         .filter { it.isNotEmpty() }
         .map { strings -> mutableMapOf(*strings.mapIndexed { i, string -> "${i + 1}" to string }.toTypedArray()) }
 
@@ -60,8 +60,8 @@ private fun line(content: String): List<String> {
     return words.map { it.removeSurrounding("\"") }
 }
 
-private fun List<String>.ensureSize(size: Int): List<String> {
-    if (size > this.size) return this + List(size - this.size) { "" }
+internal fun <T> List<T>.ensureSize(size: Int, default: T): List<T> {
+    if (size > this.size) return this + List(size - this.size) { default }
     return this
 }
 
@@ -70,7 +70,7 @@ internal fun Any?.stringRepresent(): String {
         is Number -> this.toString()
         is Boolean -> this.toString()
         is String -> this.represent()
-        else -> "\"$this\""
+        else -> if (this == null) "" else "\"$this\""
     }
 }
 
