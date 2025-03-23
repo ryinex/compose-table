@@ -9,6 +9,6 @@ data class CsvFile(
             .filter { it.values.any { it.isNotBlank() } }
             .map { it.values.toList() }
 
-        return rows.joinToString("\n") { it.map { "\"$it\"" }.joinToString(",") }
+        return rows.joinToString("\n") { it.map { it.stringRepresent() }.joinToString(",") }
     }
 }

@@ -11,6 +11,14 @@ expect object CsvReadWrite {
     suspend fun save(name: String, content: String)
 }
 
+suspend fun CsvReadWrite.save(name: String, list: List<List<Any?>>) {
+    val content = list.joinToString("\n") { row ->
+        row.joinToString(",") { cellItem -> cellItem.stringRepresent() }
+    }
+
+    save(name, content)
+}
+
 internal fun csvLines(content: String): List<MutableMap<String, String>> {
     val lines = content.split("\n").filter { it.isNotBlank() }
     val leader = lines.firstOrNull()?.let { line(it) } ?: return emptyList()
@@ -55,4 +63,20 @@ private fun line(content: String): List<String> {
 private fun List<String>.ensureSize(size: Int): List<String> {
     if (size > this.size) return this + List(size - this.size) { "" }
     return this
+}
+
+internal fun Any?.stringRepresent(): String {
+    return when (this) {
+        is Number -> this.toString()
+        is Boolean -> this.toString()
+        is String -> this.represent()
+        else -> "\"$this\""
+    }
+}
+
+private fun String.represent(): String {
+    toLongOrNull()?.let { return it.toString() }
+    toDoubleOrNull()?.let { return it.toString() }
+    toBooleanStrictOrNull()?.let { return it.toString() }
+    return if (!this.contains(",")) this else "\"$this\""
 }
