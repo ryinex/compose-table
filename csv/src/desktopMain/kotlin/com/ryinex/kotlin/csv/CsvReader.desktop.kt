@@ -20,8 +20,9 @@ actual object CsvReadWrite {
         dialog.isVisible = true
         val directory = dialog.directory
         val fileName = dialog.file
+        if (directory.isNullOrBlank() || fileName.isNullOrBlank()) return@withContext null
         dialog.dispose()
-        val content = if (fileName != null) File(directory, fileName).readText() else ""
+        val content = File(directory, fileName).readText()
         return@withContext open(fileName ?: "", content)
     }
 
@@ -43,6 +44,9 @@ actual object CsvReadWrite {
         dialog.file = name.ensureEndsWithCsv()
         dialog.isVisible = true
         val dir = dialog.directory
+        if (dialog.directory.isNullOrBlank() || dialog.file.isNullOrBlank()) {
+            return@withContext
+        }
 
         withContext(Dispatchers.Default) {
             val oneFile = File(dir + dialog.file)
