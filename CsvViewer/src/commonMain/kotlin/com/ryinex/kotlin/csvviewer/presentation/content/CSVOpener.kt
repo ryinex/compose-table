@@ -7,10 +7,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ryinex.kotlin.csvviewer.presentation.models.CSVFile
+import com.ryinex.kotlin.csv.CsvFile
+import com.ryinex.kotlin.csv.CsvReadWrite
 import com.ryinex.kotlin.csvviewer.presentation.models.CSVRow
 import com.ryinex.kotlin.datatable.data.DataTable
 import com.ryinex.kotlin.datatable.data.DataTableConfig
@@ -30,10 +33,11 @@ import com.ryinex.kotlin.datatable.data.DataTableEditTextConfig
 import com.ryinex.kotlin.datatable.data.setList
 import com.ryinex.kotlin.datatable.data.text
 import com.ryinex.kotlin.datatable.views.DataTableView
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun CSVOpener(
-    content: CSVFile,
+    content: CsvFile,
     isLocked: Boolean,
     config: DataTableConfig,
     editConfig: DataTableEditTextConfig<String, CSVRow>,
@@ -44,7 +48,7 @@ internal fun CSVOpener(
 
 @Composable
 private fun Content(
-    content: CSVFile,
+    content: CsvFile,
     isLocked: Boolean,
     config: DataTableConfig,
     editConfig: DataTableEditTextConfig<String, CSVRow>,
@@ -54,7 +58,7 @@ private fun Content(
 }
 
 @Composable
-internal fun Title(fileName: String, file: CSVFile?, onReload: () -> Unit) {
+internal fun Title(fileName: String, file: CsvFile?, onReload: () -> Unit) {
     var fileName by remember { mutableStateOf(fileName) }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -73,7 +77,13 @@ internal fun Title(fileName: String, file: CSVFile?, onReload: () -> Unit) {
         ) {
             IconButton(onClick = onReload) { Icon(Icons.Filled.Refresh, contentDescription = null) }
 
-            if (file != null) SaveButton("Save", fileName, file)
+            if (file != null) {
+                val scope = rememberCoroutineScope()
+                Button(
+                    onClick = {
+                        scope.launch { CsvReadWrite.save(name = fileName, content = file.raw()) }
+                    }) { Text("Save") }
+            }
         }
     }
 }
@@ -97,10 +107,10 @@ private fun Table(
                     name = key,
                     value = { _, data -> data.value[key] ?: "" },
                     editTextConfig =
-                    editConfig.copy(onConfirmEdit = { data, _, text ->
-                        data.value[key] = text
-                        text
-                    })
+                        editConfig.copy(onConfirmEdit = { data, _, text ->
+                            data.value[key] = text
+                            text
+                        })
                 )
             }
 
@@ -113,9 +123,3 @@ private fun Table(
 
     DataTableView(table = table)
 }
-
-@Composable
-internal expect fun SaveButton(text: String, fileName: String, file: CSVFile)
-
-@Composable
-internal expect fun SelectButton(isFirstHeader: Boolean, text: String, onLoad: (CSVFile) -> Unit)

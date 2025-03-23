@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.ryinex.kotlin.csv.CsvFile
 import composetable.csvviewer.generated.resources.Res
 import composetable.csvviewer.generated.resources.ic_pet_21
 import composetable.csvviewer.generated.resources.ic_pet_30
@@ -115,10 +116,10 @@ internal object Samples {
     private val insurances =
         listOf(true, false)
     private val descriptionText = "Lorem ipsum dolor sit amet,\n consectetur adipiscing elit, sed do eiusmod tempor\n" +
-        " incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n quis nostrud exercitation" +
-        " ullamco laboris nisi ut aliquip\n ex ea commodo consequat.\n Duis aute irure dolor in reprehenderit " +
-        "in voluptate\n velit esse cillum dolore eu fugiat nulla pariatur. \nExcepteur sint occaecat cupidatat" +
-        " non proident,\n sunt in culpa qui officia deserunt mollit anim id est laborum."
+            " incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n quis nostrud exercitation" +
+            " ullamco laboris nisi ut aliquip\n ex ea commodo consequat.\n Duis aute irure dolor in reprehenderit " +
+            "in voluptate\n velit esse cillum dolore eu fugiat nulla pariatur. \nExcepteur sint occaecat cupidatat" +
+            " non proident,\n sunt in culpa qui officia deserunt mollit anim id est laborum."
     private val pets =
         listOf(
             Res.drawable.ic_pet_21,
@@ -137,8 +138,7 @@ internal object Samples {
             country = countries.random(),
             occupation = occupations.random(),
             salary = salaries.random(),
-            description =
-            descriptionText.split("\n").shuffled().take(Random.nextInt(2, 4))
+            description = descriptionText.split("\n").shuffled().take(Random.nextInt(2, 4))
                 .mapIndexed { index, s -> "${index + 1}- ${s.trim()}::${s.trim()}" }
                 .joinToString("\n").trim(),
             company = companies.random(),
@@ -160,4 +160,12 @@ internal object Samples {
         Icons.Default.Build,
         Icons.Default.Favorite
     ).random()
+}
+
+fun empty(name: String = "Untitled"): CsvFile {
+    val list = (0..99).map {
+        val list = ('A'..'Z').map { it.toString() to " " }
+        mutableMapOf(*list.toTypedArray())
+    }
+    return CsvFile(name, list)
 }

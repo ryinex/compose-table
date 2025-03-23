@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,18 +40,19 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.ryinex.kotlin.csv.CsvReadWrite
 import com.ryinex.kotlin.csvviewer.presentation.content.CSVOpener
 import com.ryinex.kotlin.csvviewer.presentation.content.DataTableSample
-import com.ryinex.kotlin.csvviewer.presentation.content.SelectButton
 import com.ryinex.kotlin.csvviewer.presentation.content.Title
-import com.ryinex.kotlin.csvviewer.presentation.models.CSVFile
 import com.ryinex.kotlin.csvviewer.presentation.models.CSVLoadType
 import com.ryinex.kotlin.csvviewer.presentation.models.CSVRow
+import com.ryinex.kotlin.csvviewer.presentation.models.empty
 import com.ryinex.kotlin.csvviewer.presentation.theme.AppTheme
 import com.ryinex.kotlin.datatable.data.DataTableColumnLayout
 import com.ryinex.kotlin.datatable.data.DataTableConfig
 import com.ryinex.kotlin.datatable.data.DataTableEditTextConfig
 import com.ryinex.kotlin.datatable.data.DataTableMobileTextEdit
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -205,11 +207,23 @@ private fun RowScope.CSVOpenButton(onLoad: (CSVLoadType) -> Unit) {
 
         Button(
             modifier = Modifier.width(200.dp),
-            onClick = { onLoad(CSVLoadType.File(CSVFile.empty())) },
+            onClick = { onLoad(CSVLoadType.File(empty())) },
             content = { Text("Empty") }
         )
 
-        SelectButton(isFirstHeader = isFirstHeader, text = "Select File", onLoad = { onLoad(CSVLoadType.File(it)) })
+        val scope = rememberCoroutineScope()
+        Button(
+            modifier = Modifier.width(200.dp),
+            onClick = {
+                scope.launch {
+                    val file = CsvReadWrite.open() ?: return@launch
+                    onLoad(CSVLoadType.File(file))
+                }
+            },
+            content = { Text("Select File") }
+        )
+
+//        SelectButton(isFirstHeader = isFirstHeader, text = "Select File", onLoad = { onLoad(CSVLoadType.File(it)) })
     }
 }
 

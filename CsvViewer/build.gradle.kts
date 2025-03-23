@@ -63,6 +63,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.composeDataTable)
+            implementation(projects.csv)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

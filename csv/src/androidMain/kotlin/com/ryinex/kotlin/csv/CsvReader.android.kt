@@ -58,13 +58,11 @@ actual object CsvReadWrite {
     }
 
     actual suspend fun save(csvFile: CsvFile) {
-        context = currentCoroutineContext()
-        saveLauncher?.launch(csvFile.name.ensureEndsWithCsv()) ?: bindError()
-        val result = flow.first() ?: bindError()
-        save(result, csvFile.raw())
+        save(csvFile.name, csvFile.raw())
     }
 
     actual suspend fun save(name: String, content: String) {
+        context = currentCoroutineContext()
         saveLauncher?.launch(name.ensureEndsWithCsv()) ?: bindError()
         val result = flow.first() ?: bindError()
         save(result, content)
