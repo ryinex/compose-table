@@ -11,24 +11,23 @@ expect object CsvReadWrite {
     suspend fun save(name: String, content: String)
 }
 
+@Suppress("UnusedReceiverParameter", "RemoveRedundantQualifierName")
 suspend fun CsvReadWrite.save(name: String, list: List<List<Any?>>) {
-    val content = list.joinToString("\n") { row ->
+    val content = list.ensureSize(null).joinToString("\n") { row ->
         row.joinToString(",") { cellItem -> cellItem.stringRepresent() }
     }
-
-    save(name, content)
+    val file = CsvReadWrite.open(name, content) ?: return
+    CsvReadWrite.save(file)
 }
 
 internal fun csvLines(content: String): List<MutableMap<String, String>> {
-    val lines = content.split("\n").filter { it.isNotBlank() }
-    val leader = lines.firstOrNull()?.let { line(it) } ?: return emptyList()
-
-    val mapped = lines
-        .map { line(it).ensureSize(size = leader.size, default = "") }
+    return content
+        .split("\n")
+        .filter { it.isNotBlank() }
+        .map { line(it) }
+        .ensureSize(" ")
         .filter { it.isNotEmpty() }
         .map { strings -> mutableMapOf(*strings.mapIndexed { i, string -> "${i + 1}" to string }.toTypedArray()) }
-
-    return mapped
 }
 
 internal fun String.ensureEndsWithCsv(): String {
@@ -42,7 +41,7 @@ private fun line(content: String): List<String> {
 
     for (i in content.indices) {
         val char = content[i]
-        if (i == content.length - 1) {
+        if (i == content.length - 1 && char != ',') {
             words.add(content.substring(lastSplitIndex, i + 1))
         }
 
@@ -57,12 +56,17 @@ private fun line(content: String): List<String> {
             counter = 0
         }
     }
-    return words.map { it.removeSurrounding("\"") }
+    return words
 }
 
 internal fun <T> List<T>.ensureSize(size: Int, default: T): List<T> {
     if (size > this.size) return this + List(size - this.size) { default }
     return this
+}
+
+internal fun <T> List<List<T>>.ensureSize(default: T): List<List<T>> {
+    val largest = this.maxOf { it.size }
+    return this.map { it.ensureSize(size = largest, default = default) }
 }
 
 internal fun Any?.stringRepresent(): String {
@@ -78,5 +82,9 @@ private fun String.represent(): String {
     toLongOrNull()?.let { return it.toString() }
     toDoubleOrNull()?.let { return it.toString() }
     toBooleanStrictOrNull()?.let { return it.toString() }
-    return if (!this.contains(",")) this else "\"$this\""
+    return if (!this.contains(",") || this.doubleQuoted()) this else "\"$this\""
+}
+
+private fun String.doubleQuoted(): Boolean {
+    return this.startsWith("\"") && this.endsWith("\"")
 }
