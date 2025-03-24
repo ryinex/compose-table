@@ -30,3 +30,4 @@ dependencyResolutionManagement {
 
 include(":CsvViewer")
 include(":compose-data-table")
+include(":csv")

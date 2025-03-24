@@ -1,4 +1,4 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -6,9 +6,10 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("com.vanniktech.maven.publish") version "0.31.0"
 }
 
 kotlin {
@@ -17,6 +18,7 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(libs.versions.java.get()))
         }
+        publishLibraryVariants("release")
     }
 
 //    listOf(
@@ -25,7 +27,7 @@ kotlin {
 //        iosSimulatorArm64()
 //    ).forEach { iosTarget ->
 //        iosTarget.binaries.framework {
-//            baseName = "CsvViewer"
+//            baseName = "Csv"
 //            isStatic = true
 //        }
 //    }
@@ -34,12 +36,12 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "CsvViewer"
+        moduleName = "Csv"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
-                outputFileName = "CsvViewer.js"
+                outputFileName = "Csv.js"
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
                         // Serve sources to debug inside browser
@@ -49,7 +51,6 @@ kotlin {
                 }
             }
         }
-        binaries.executable()
     }
 
     sourceSets {
@@ -57,14 +58,10 @@ kotlin {
 
         androidMain.dependencies {
             implementation(compose.preview)
-            implementation(libs.androidx.core.ktx)
-            implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.appcompat)
         }
         commonMain.dependencies {
-            implementation(projects.composeDataTable)
-            implementation(projects.csv)
-
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -73,25 +70,29 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.kotlinx.serialization.json)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
+        wasmJsMain.dependencies {
+            implementation(libs.kotlinx.browser)
+        }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xwasm-use-new-exception-proposal")
     }
 }
 
 android {
-    namespace = "com.ryinex.kotlin.csvviewer"
+    namespace = "com.ryinex.kotlin.csv"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.ryinex.kotlin.csvviewer"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
     }
     packaging {
         resources {
@@ -99,8 +100,14 @@ android {
         }
     }
     buildTypes {
+        defaultConfig {
+            consumerProguardFiles("proguard-rules.pro")
+        }
         getByName("release") {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -110,18 +117,39 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.runtime.android)
     debugImplementation(compose.uiTooling)
 }
-
-compose.desktop {
-    application {
-        mainClass = "com.ryinex.kotlin.csvviewer.presentation.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.ryinex.kotlin.csvviewer"
-            packageVersion = System.getProperty("VERSION_NAME") ?: "1.0.0"
-        }
-    }
-}
+//
+//mavenPublishing {
+//    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+//
+//    signAllPublications()
+//
+//    coordinates(rootProject.group.toString(), name, rootProject.version.toString())
+//
+//    pom {
+//        name = "Compose Table"
+//        description = "A DataTable for Compose Multiplatform"
+//        inceptionYear = "2025"
+//        url = "https://github.com/ryinex/compose-table"
+//        licenses {
+//            license {
+//                name = "The Apache License, Version 2.0"
+//                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+//                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+//            }
+//        }
+//        developers {
+//            developer {
+//                id = "elkhoudiry"
+//                name = "Ahmed Elkhoudiry"
+//                url = "https://github.com/elkhoudiry/"
+//            }
+//        }
+//        scm {
+//            url = "https://github.com/ryinex/compose-table"
+//            connection = "scm:git:git://github.com/ryinex/compose-table.git"
+//            developerConnection = "scm:git:ssh://git@github.com/ryinex/compose-table.git"
+//        }
+//    }
+//}

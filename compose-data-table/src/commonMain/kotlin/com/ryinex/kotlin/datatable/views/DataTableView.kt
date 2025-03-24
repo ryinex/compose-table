@@ -95,5 +95,7 @@ private fun LazyListScope.DataTableHeaderRow(table: DataTable<*>, scrollableStat
                 DataTableRowView(scrollState = scrollableState, table = table, cells = table.headers())
             }
         }
+    } else {
+        stickyHeader { InitViewPort(table) }
     }
 }
