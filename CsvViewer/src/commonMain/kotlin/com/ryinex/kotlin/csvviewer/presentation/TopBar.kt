@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,10 @@ import com.ryinex.kotlin.datatable.data.DataTableMobileTextEdit
 import com.ryinex.kotlin.datatable.data.DataTableSaveConfirm
 import com.ryinex.kotlin.datatable.data.DataTableSaveTrigger
 import com.ryinex.kotlin.datatable.views.DataTableHorizontalScrollbar
+import composetable.csvviewer.generated.resources.Res
+import composetable.csvviewer.generated.resources.ic_dark_mode
+import composetable.csvviewer.generated.resources.ic_light_mode
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun TopBar(
@@ -55,6 +60,7 @@ internal fun TopBar(
 ) {
     val state = rememberScrollState()
     val colorFieldWidth = remember { 50.dp }
+    val scope = rememberCoroutineScope()
     val backgroundColor: Color = MaterialTheme.colorScheme.background
     val contentColor: Color = MaterialTheme.colorScheme.onBackground
     var backgroundRed by remember { mutableStateOf((backgroundColor.red * 255).toInt().toString()) }
@@ -107,6 +113,30 @@ internal fun TopBar(
     var extended by remember { mutableStateOf(false) }
     var editConfig by remember { mutableStateOf(initialEditConfig) }
 
+    val applyFunction = remember {
+        {
+            val column = initialConfig.column.copy(layout = layout)
+            val cell =
+                initialConfig.column.cell.copy(
+                    backgroundColor = resultBackgroundColor,
+                    color = resultContentColor,
+                    enterFocusChild = isEnterFocusChild
+                )
+            onApply(
+                initialConfig.copy(
+                    column = column.copy(cell = cell),
+                    horizontalSpacing = horizontalSpacing.toIntOrNull() ?: 0,
+                    verticalSpacing = verticalSpacing.toIntOrNull() ?: 0
+                ),
+                editConfig
+            )
+        }
+    }
+
+    LaunchedEffect(isDarkTheme) {
+        applyFunction()
+    }
+
     Column(Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier,
@@ -120,32 +150,18 @@ internal fun TopBar(
                 )
             }
 
-            TextButton(onClick = {
-                val column = initialConfig.column.copy(layout = layout)
-                val cell =
-                    initialConfig.column.cell.copy(
-                        backgroundColor = resultBackgroundColor,
-                        color = resultContentColor,
-                        enterFocusChild = isEnterFocusChild
-                    )
-                onApply(
-                    initialConfig.copy(
-                        column = column.copy(cell = cell),
-                        horizontalSpacing = horizontalSpacing.toIntOrNull() ?: 0,
-                        verticalSpacing = verticalSpacing.toIntOrNull() ?: 0
-                    ),
-                    editConfig
-                )
-            }) { Text("Apply") }
+            TextButton(onClick = applyFunction) { Text("Apply") }
 
-//            IconButton(onClick = toggleDarkTheme) {
-//                Icon(
-//                    modifier = Modifier.padding(8.dp),
-//                    painter = painterResource(if (isDarkTheme) Res.drawable.ic_light_mode else Res.drawable.ic_dark_mode),
-//                    contentDescription = null,
-//                    tint = MaterialTheme.colorScheme.primary
-//                )
-//            }
+            IconButton(onClick = { toggleDarkTheme() }) {
+                Icon(
+                    modifier = Modifier.padding(8.dp),
+                    painter = painterResource(
+                        if (isDarkTheme) Res.drawable.ic_light_mode else Res.drawable.ic_dark_mode
+                    ),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
 
             Row(
                 modifier = Modifier.horizontalScroll(state = state),

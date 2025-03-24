@@ -59,7 +59,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App() {
-    var isDarkTheme by remember { mutableStateOf(false) }
+    var isDarkTheme by remember { mutableStateOf(true) }
     AppTheme(useDarkTheme = isDarkTheme) {
         val isLocked = remember { mutableStateOf(false) }
         val backgroundColor = MaterialTheme.colorScheme.background
@@ -86,7 +86,7 @@ fun App() {
             val cell = column.cell.copy(
                 enterFocusChild = true,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor),
+                modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor.copy(alpha = 0.3f)),
                 padding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
             )
 
@@ -94,10 +94,10 @@ fun App() {
         }
 
         Scaffold(
-            modifier = Modifier.padding(4.dp).clickable(interactionSource = null, indication = null) { },
+            modifier = Modifier.clickable(interactionSource = null, indication = null) { },
             floatingActionButton = { if (content != null) FAB(isLocked) }
         ) {
-            Column {
+            Column(Modifier.padding(4.dp)) {
                 key(isDarkTheme) {
                     TopBar(
                         initialConfig = config,
