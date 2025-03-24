@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -85,11 +86,13 @@ fun App() {
             val cell = column.cell.copy(
                 enterFocusChild = true,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor)
+                modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor),
+                padding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
             )
 
             mutableStateOf(table.copy(column = column.copy(cell = cell)))
         }
+
         Scaffold(
             modifier = Modifier.padding(4.dp).clickable(interactionSource = null, indication = null) { },
             floatingActionButton = { if (content != null) FAB(isLocked) }

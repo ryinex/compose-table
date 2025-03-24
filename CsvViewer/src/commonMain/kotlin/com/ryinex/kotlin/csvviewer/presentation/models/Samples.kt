@@ -164,7 +164,7 @@ internal object Samples {
 
 fun empty(name: String = "Untitled"): CsvFile {
     val list = (0..99).map {
-        val list = ('A'..'Z').map { it.toString() to " " }
+        val list = ('A'..'Z').map { it.toString() to "" }
         mutableMapOf(*list.toTypedArray())
     }
     return CsvFile(name, list)

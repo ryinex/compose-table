@@ -25,7 +25,7 @@ internal fun csvLines(content: String): List<MutableMap<String, String>> {
         .split("\n")
         .filter { it.isNotBlank() }
         .map { line(it) }
-        .ensureSize(" ")
+        .ensureSize("")
         .filter { it.isNotEmpty() }
         .map { strings -> mutableMapOf(*strings.mapIndexed { i, string -> "${i + 1}" to string }.toTypedArray()) }
 }
