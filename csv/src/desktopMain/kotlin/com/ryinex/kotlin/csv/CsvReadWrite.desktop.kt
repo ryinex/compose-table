@@ -1,7 +1,5 @@
 package com.ryinex.kotlin.csv
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.DataOutputStream
@@ -9,6 +7,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.FilenameFilter
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 actual object CsvReadWrite {
 

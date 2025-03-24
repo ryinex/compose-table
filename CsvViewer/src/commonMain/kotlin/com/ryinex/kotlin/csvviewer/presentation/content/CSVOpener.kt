@@ -82,7 +82,8 @@ internal fun Title(fileName: String, file: CsvFile?, onReload: () -> Unit) {
                 Button(
                     onClick = {
                         scope.launch { CsvReadWrite.save(name = fileName, content = file.raw()) }
-                    }) { Text("Save") }
+                    }
+                ) { Text("Save") }
             }
         }
     }
@@ -107,10 +108,10 @@ private fun Table(
                     name = key,
                     value = { _, data -> data.value[key] ?: "" },
                     editTextConfig =
-                        editConfig.copy(onConfirmEdit = { data, _, text ->
-                            data.value[key] = text
-                            text
-                        })
+                    editConfig.copy(onConfirmEdit = { data, _, text ->
+                        data.value[key] = text
+                        text
+                    })
                 )
             }
 

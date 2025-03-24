@@ -116,10 +116,10 @@ internal object Samples {
     private val insurances =
         listOf(true, false)
     private val descriptionText = "Lorem ipsum dolor sit amet,\n consectetur adipiscing elit, sed do eiusmod tempor\n" +
-            " incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n quis nostrud exercitation" +
-            " ullamco laboris nisi ut aliquip\n ex ea commodo consequat.\n Duis aute irure dolor in reprehenderit " +
-            "in voluptate\n velit esse cillum dolore eu fugiat nulla pariatur. \nExcepteur sint occaecat cupidatat" +
-            " non proident,\n sunt in culpa qui officia deserunt mollit anim id est laborum."
+        " incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n quis nostrud exercitation" +
+        " ullamco laboris nisi ut aliquip\n ex ea commodo consequat.\n Duis aute irure dolor in reprehenderit " +
+        "in voluptate\n velit esse cillum dolore eu fugiat nulla pariatur. \nExcepteur sint occaecat cupidatat" +
+        " non proident,\n sunt in culpa qui officia deserunt mollit anim id est laborum."
     private val pets =
         listOf(
             Res.drawable.ic_pet_21,

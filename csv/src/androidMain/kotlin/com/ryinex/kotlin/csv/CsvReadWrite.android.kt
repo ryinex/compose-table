@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import java.io.FileOutputStream
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
@@ -18,8 +20,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
-import kotlin.coroutines.CoroutineContext
 
 actual object CsvReadWrite {
     private val observer: LifecycleEventObserver = LifecycleEventObserver { _, event -> onLifeCycleEvent(event) }
@@ -85,7 +85,6 @@ actual object CsvReadWrite {
 
         return caller.registerForActivityResult(ActivityResultContracts.OpenDocument(), resultCallback)
     }
-
 
     private fun getSaveLauncher(callback: (Uri?) -> Unit): ActivityResultLauncher<String> {
         val caller = owner as ActivityResultCaller
