@@ -41,9 +41,10 @@ internal fun CSVOpener(
     isLocked: Boolean,
     config: DataTableConfig,
     editConfig: DataTableEditTextConfig<String, CSVRow>,
+    isFirstHeader: Boolean,
     onReload: () -> Unit
 ) {
-    Content(content, isLocked, config, editConfig, onReload = onReload)
+    Content(content, isLocked, config, editConfig, isFirstHeader, onReload = onReload)
 }
 
 @Composable
@@ -52,9 +53,10 @@ private fun Content(
     isLocked: Boolean,
     config: DataTableConfig,
     editConfig: DataTableEditTextConfig<String, CSVRow>,
+    isFirstHeader: Boolean,
     onReload: () -> Unit
 ) {
-    Table(content.content, isLocked, config, editConfig)
+    Table(content.content, isLocked, config, editConfig, isFirstHeader)
 }
 
 @Composable
@@ -94,7 +96,8 @@ private fun Table(
     content: List<MutableMap<String, String>>,
     isLocked: Boolean,
     config: DataTableConfig,
-    editConfig: DataTableEditTextConfig<String, CSVRow>
+    editConfig: DataTableEditTextConfig<String, CSVRow>,
+    isFirstHeader: Boolean
 ) {
     val scope = rememberCoroutineScope()
     val lazyState = rememberLazyListState()
@@ -102,10 +105,11 @@ private fun Table(
     val table =
         remember {
             val table = DataTable<CSVRow>(scope = scope, lazyState = lazyState, config = config)
-
+            val first = content.first()
+            val modifiedContent = if (isFirstHeader) content.drop(1) else content
             content.first().forEach { (key, _) ->
                 table.text(
-                    name = key,
+                    name = if (isFirstHeader && first.isNotEmpty()) first[key] ?: key else key,
                     value = { _, data -> data.value[key] ?: "" },
                     editTextConfig =
                     editConfig.copy(onConfirmEdit = { data, _, text ->
@@ -115,7 +119,7 @@ private fun Table(
                 )
             }
 
-            table.setList(content.map { CSVRow(it.keys.first(), it as MutableMap<Any, String>) })
+            table.setList(modifiedContent.map { CSVRow(it.keys.first(), it as MutableMap<Any, String>) })
             table.enableInteractions(true)
             table
         }

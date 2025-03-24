@@ -65,6 +65,7 @@ fun App() {
         val backgroundColor = MaterialTheme.colorScheme.background
         val contentColor = MaterialTheme.colorScheme.onBackground
         var content by remember { mutableStateOf<CSVLoadType?>(null) }
+        var isFirstHeader by remember { mutableStateOf(true) }
         var editConfig by remember {
             val config = DataTableEditTextConfig.default<Any, Any>(
                 isEditable = true,
@@ -82,7 +83,7 @@ fun App() {
                 backgroundColor = backgroundColor,
                 color = contentColor
             )
-            val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepInitial)
+            val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepLargest)
             val cell = column.cell.copy(
                 enterFocusChild = true,
                 textAlign = TextAlign.Center,
@@ -123,6 +124,8 @@ fun App() {
                         }
 
                         is CSVLoadType.File -> {
+                            val isEmpty = remember { (content as CSVLoadType.File).file == empty() }
+
                             Title(
                                 fileName = (content as CSVLoadType.File).file.name,
                                 file = (content as CSVLoadType.File).file,
@@ -134,12 +137,15 @@ fun App() {
                                 isLocked = isLocked.value,
                                 config = config,
                                 editConfig = editConfig as DataTableEditTextConfig<String, CSVRow>,
+                                isFirstHeader = isFirstHeader && !isEmpty,
                                 onReload = { content = null }
                             )
                         }
 
                         null -> {
                             Loader(
+                                isFirstHeader = isFirstHeader,
+                                onIsFirstHeader = { isFirstHeader = it },
                                 onLoad = {
                                     when (it) {
                                         is CSVLoadType.Sample -> content = it
@@ -168,7 +174,7 @@ private fun FAB(isLocked: MutableState<Boolean>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Loader(onLoad: (CSVLoadType) -> Unit) {
+private fun Loader(isFirstHeader: Boolean, onIsFirstHeader: (Boolean) -> Unit, onLoad: (CSVLoadType) -> Unit) {
     val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize().verticalScroll(scrollState), contentAlignment = Alignment.Center) {
         FlowRow(
@@ -178,14 +184,17 @@ private fun Loader(onLoad: (CSVLoadType) -> Unit) {
         ) {
             UnWrapText(modifier = Modifier.weight(1f), text = "CSV Opener")
 
-            CSVOpenButton(onLoad)
+            CSVOpenButton(isFirstHeader, onIsFirstHeader, onLoad)
         }
     }
 }
 
 @Composable
-private fun RowScope.CSVOpenButton(onLoad: (CSVLoadType) -> Unit) {
-    var isFirstHeader by remember { mutableStateOf(true) }
+private fun RowScope.CSVOpenButton(
+    isFirstHeader: Boolean,
+    onIsFirstHeader: (Boolean) -> Unit,
+    onLoad: (CSVLoadType) -> Unit
+) {
     Column(
         modifier = Modifier.weight(1f),
         verticalArrangement = Arrangement.Center,
@@ -202,7 +211,7 @@ private fun RowScope.CSVOpenButton(onLoad: (CSVLoadType) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(checked = isFirstHeader, onCheckedChange = { isFirstHeader = it })
+            Checkbox(checked = isFirstHeader, onCheckedChange = onIsFirstHeader)
             Text("First Row is Header", style = MaterialTheme.typography.bodyMedium)
         }
 
