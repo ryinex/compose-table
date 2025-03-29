@@ -228,7 +228,7 @@ private fun RowScope.CSVOpenButton(
             modifier = Modifier.width(200.dp),
             onClick = {
                 scope.launch {
-                    val file = CsvReadWrite.open() ?: return@launch
+                    val file = runCatching { CsvReadWrite.open() }.getOrNull() ?: return@launch
                     onLoad(CSVLoadType.File(file))
                 }
             },

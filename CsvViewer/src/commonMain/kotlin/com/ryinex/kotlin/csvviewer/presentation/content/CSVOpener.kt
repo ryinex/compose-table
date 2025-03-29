@@ -83,7 +83,7 @@ internal fun Title(fileName: String, file: CsvFile?, onReload: () -> Unit) {
                 val scope = rememberCoroutineScope()
                 Button(
                     onClick = {
-                        scope.launch { CsvReadWrite.save(name = fileName, content = file.raw()) }
+                        scope.launch { runCatching { CsvReadWrite.save(name = fileName, content = file.raw()) } }
                     }
                 ) { Text("Save") }
             }
@@ -112,10 +112,10 @@ private fun Table(
                     name = if (isFirstHeader && first.isNotEmpty()) first[key] ?: key else key,
                     value = { _, data -> data.value[key] ?: "" },
                     editTextConfig =
-                    editConfig.copy(onConfirmEdit = { data, _, text ->
-                        data.value[key] = text
-                        text
-                    })
+                        editConfig.copy(onConfirmEdit = { data, _, text ->
+                            data.value[key] = text
+                            text
+                        })
                 )
             }
 

@@ -63,7 +63,6 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.composeDataTable)
-            implementation(projects.csv)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -72,6 +71,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.kotlin.csv)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.serialization.json)
         }
