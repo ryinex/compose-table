@@ -53,7 +53,7 @@ jobs:
                     client-secret: ${{ secrets.MACHINE_IDENTITY_CLIENT_SECRET }}
                     env-slug: "prod"
                     project-slug: "secrets"
-                    secret-path: "/compose-table/publish"
+                    secret-path: "/maven/gradle"
                     domain: https://eu.infisical.com
 
             -   name: Prepare Release Version
