@@ -118,6 +118,7 @@ private fun New(isLocked: Boolean, config: DataTableConfig, editConfig: DataTabl
                 .comparable(
                     name = "Insurance",
                     value = { index, data -> data.insurance },
+                    presentation = { index, value, config -> config.copy(alignment = Alignment.Center) },
                     content = { index, value ->
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Checkbox(checked = value, onCheckedChange = null)
