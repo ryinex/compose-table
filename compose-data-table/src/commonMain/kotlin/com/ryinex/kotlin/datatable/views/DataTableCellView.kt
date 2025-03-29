@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -124,8 +123,8 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
                 },
                 onClick = { }
             ),
-        color = config.backgroundColor ?: MaterialTheme.colorScheme.surface,
-        contentColor = config.color ?: MaterialTheme.colorScheme.onSurface,
+        color = config.backgroundColor,
+        contentColor = config.color,
         shape = config.shape,
         tonalElevation = if (isFocused || isChildFocused) 16.dp else if (isHovered) 1.dp else 0.dp
     ) {

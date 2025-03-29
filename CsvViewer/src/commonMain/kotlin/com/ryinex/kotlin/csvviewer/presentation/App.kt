@@ -86,7 +86,7 @@ fun App() {
             val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepLargest)
             val cell = column.cell.copy(
                 enterFocusChild = true,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor.copy(alpha = 0.3f)),
                 padding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
             )

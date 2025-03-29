@@ -37,6 +37,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ryinex.kotlin.datatable.data.DataTableColumnLayout
 import com.ryinex.kotlin.datatable.data.DataTableConfig
@@ -106,6 +107,9 @@ internal fun TopBar(
     var showLayoutDropdown by remember { mutableStateOf(false) }
     var layout: DataTableColumnLayout by remember { mutableStateOf(initialConfig.column.layout) }
 
+    var showTextAlignDropdown by remember { mutableStateOf(false) }
+    var textAlign by remember { mutableStateOf(initialConfig.column.cell.textAlign) }
+
     var horizontalSpacing by remember { mutableStateOf(initialConfig.horizontalSpacing.toString()) }
     var verticalSpacing by remember { mutableStateOf(initialConfig.verticalSpacing.toString()) }
     var isEnterFocusChild by remember { mutableStateOf(initialConfig.column.cell.enterFocusChild) }
@@ -120,7 +124,8 @@ internal fun TopBar(
                 initialConfig.column.cell.copy(
                     backgroundColor = resultBackgroundColor,
                     color = resultContentColor,
-                    enterFocusChild = isEnterFocusChild
+                    enterFocusChild = isEnterFocusChild,
+                    textAlign = textAlign
                 )
             onApply(
                 initialConfig.copy(
@@ -284,6 +289,33 @@ internal fun TopBar(
                     checked = isEnterFocusChild,
                     onCheckedChange = { isEnterFocusChild = it }
                 )
+
+                Text(
+                    text = "Text Align: $textAlign",
+                    modifier = Modifier.clickable { showTextAlignDropdown = true }
+                )
+
+                DropdownMenu(expanded = showTextAlignDropdown, onDismissRequest = { showTextAlignDropdown = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Start") },
+                        onClick = { textAlign = TextAlign.Start }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("Center") },
+                        onClick = { textAlign = TextAlign.Center }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("End") },
+                        onClick = { textAlign = TextAlign.End }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("Justify") },
+                        onClick = { textAlign = TextAlign.Justify }
+                    )
+                }
             }
         }
 
