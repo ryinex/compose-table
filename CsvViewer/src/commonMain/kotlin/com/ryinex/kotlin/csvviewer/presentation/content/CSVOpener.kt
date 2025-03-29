@@ -110,7 +110,7 @@ private fun Table(
             content.first().forEach { (key, _) ->
                 table.text(
                     name = if (isFirstHeader && first.isNotEmpty()) first[key] ?: key else key,
-                    value = { _, data -> data.value[key] ?: "" },
+                    value = { _, data -> data.value[key]?.removeSurrounding("\"") ?: "" },
                     editTextConfig =
                         editConfig.copy(onConfirmEdit = { data, _, text ->
                             data.value[key] = text
