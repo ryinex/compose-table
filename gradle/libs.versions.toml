@@ -15,6 +15,7 @@ compose-multiplatform = "1.7.3"
 java = "11"
 junit = "4.13.2"
 kotlin = "2.1.0"
+kotlinCsv = "1.0.2"
 kotlinx-coroutines = "1.10.1"
 kotlinxBrowser = "0.3"
 kotlinxSerialization = "1.7.3"
@@ -39,6 +40,7 @@ kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
+kotlin-csv = { group = "com.ryinex.kotlin", name = "csv", version.ref = "kotlinCsv" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

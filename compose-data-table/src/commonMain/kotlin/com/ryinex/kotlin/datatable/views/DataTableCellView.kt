@@ -129,7 +129,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
         shape = config.shape,
         tonalElevation = if (isFocused || isChildFocused) 16.dp else if (isHovered) 1.dp else 0.dp
     ) {
-        Box {
+        Box(modifier = Modifier.widthIn(min = 1.dp)) {
             Provided(config) { cell.view(cell) }
 
             if (isHeader && columnConfig.isResizable && enableInteractions) {

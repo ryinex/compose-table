@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,29 +41,31 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.ryinex.kotlin.csv.CsvReadWrite
 import com.ryinex.kotlin.csvviewer.presentation.content.CSVOpener
 import com.ryinex.kotlin.csvviewer.presentation.content.DataTableSample
-import com.ryinex.kotlin.csvviewer.presentation.content.SelectButton
 import com.ryinex.kotlin.csvviewer.presentation.content.Title
-import com.ryinex.kotlin.csvviewer.presentation.models.CSVFile
 import com.ryinex.kotlin.csvviewer.presentation.models.CSVLoadType
 import com.ryinex.kotlin.csvviewer.presentation.models.CSVRow
+import com.ryinex.kotlin.csvviewer.presentation.models.empty
 import com.ryinex.kotlin.csvviewer.presentation.theme.AppTheme
 import com.ryinex.kotlin.datatable.data.DataTableColumnLayout
 import com.ryinex.kotlin.datatable.data.DataTableConfig
 import com.ryinex.kotlin.datatable.data.DataTableEditTextConfig
 import com.ryinex.kotlin.datatable.data.DataTableMobileTextEdit
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App() {
-    var isDarkTheme by remember { mutableStateOf(false) }
+    var isDarkTheme by remember { mutableStateOf(true) }
     AppTheme(useDarkTheme = isDarkTheme) {
         val isLocked = remember { mutableStateOf(false) }
         val backgroundColor = MaterialTheme.colorScheme.background
         val contentColor = MaterialTheme.colorScheme.onBackground
         var content by remember { mutableStateOf<CSVLoadType?>(null) }
+        var isFirstHeader by remember { mutableStateOf(true) }
         var editConfig by remember {
             val config = DataTableEditTextConfig.default<Any, Any>(
                 isEditable = true,
@@ -79,20 +83,22 @@ fun App() {
                 backgroundColor = backgroundColor,
                 color = contentColor
             )
-            val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepInitial)
+            val column = table.column.copy(layout = DataTableColumnLayout.ScrollableKeepLargest)
             val cell = column.cell.copy(
                 enterFocusChild = true,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor)
+                modifier = Modifier.heightIn(40.dp).border(Dp.Hairline, contentColor.copy(alpha = 0.3f)),
+                padding = PaddingValues(horizontal = 2.dp, vertical = 2.dp)
             )
 
             mutableStateOf(table.copy(column = column.copy(cell = cell)))
         }
+
         Scaffold(
-            modifier = Modifier.padding(4.dp).clickable(interactionSource = null, indication = null) { },
+            modifier = Modifier.clickable(interactionSource = null, indication = null) { },
             floatingActionButton = { if (content != null) FAB(isLocked) }
         ) {
-            Column {
+            Column(Modifier.padding(4.dp)) {
                 key(isDarkTheme) {
                     TopBar(
                         initialConfig = config,
@@ -118,6 +124,8 @@ fun App() {
                         }
 
                         is CSVLoadType.File -> {
+                            val isEmpty = remember { (content as CSVLoadType.File).file == empty() }
+
                             Title(
                                 fileName = (content as CSVLoadType.File).file.name,
                                 file = (content as CSVLoadType.File).file,
@@ -129,12 +137,15 @@ fun App() {
                                 isLocked = isLocked.value,
                                 config = config,
                                 editConfig = editConfig as DataTableEditTextConfig<String, CSVRow>,
+                                isFirstHeader = isFirstHeader && !isEmpty,
                                 onReload = { content = null }
                             )
                         }
 
                         null -> {
                             Loader(
+                                isFirstHeader = isFirstHeader,
+                                onIsFirstHeader = { isFirstHeader = it },
                                 onLoad = {
                                     when (it) {
                                         is CSVLoadType.Sample -> content = it
@@ -163,7 +174,7 @@ private fun FAB(isLocked: MutableState<Boolean>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Loader(onLoad: (CSVLoadType) -> Unit) {
+private fun Loader(isFirstHeader: Boolean, onIsFirstHeader: (Boolean) -> Unit, onLoad: (CSVLoadType) -> Unit) {
     val scrollState = rememberScrollState()
     Box(modifier = Modifier.fillMaxSize().verticalScroll(scrollState), contentAlignment = Alignment.Center) {
         FlowRow(
@@ -173,14 +184,17 @@ private fun Loader(onLoad: (CSVLoadType) -> Unit) {
         ) {
             UnWrapText(modifier = Modifier.weight(1f), text = "CSV Opener")
 
-            CSVOpenButton(onLoad)
+            CSVOpenButton(isFirstHeader, onIsFirstHeader, onLoad)
         }
     }
 }
 
 @Composable
-private fun RowScope.CSVOpenButton(onLoad: (CSVLoadType) -> Unit) {
-    var isFirstHeader by remember { mutableStateOf(true) }
+private fun RowScope.CSVOpenButton(
+    isFirstHeader: Boolean,
+    onIsFirstHeader: (Boolean) -> Unit,
+    onLoad: (CSVLoadType) -> Unit
+) {
     Column(
         modifier = Modifier.weight(1f),
         verticalArrangement = Arrangement.Center,
@@ -197,7 +211,7 @@ private fun RowScope.CSVOpenButton(onLoad: (CSVLoadType) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(checked = isFirstHeader, onCheckedChange = { isFirstHeader = it })
+            Checkbox(checked = isFirstHeader, onCheckedChange = onIsFirstHeader)
             Text("First Row is Header", style = MaterialTheme.typography.bodyMedium)
         }
 
@@ -205,11 +219,23 @@ private fun RowScope.CSVOpenButton(onLoad: (CSVLoadType) -> Unit) {
 
         Button(
             modifier = Modifier.width(200.dp),
-            onClick = { onLoad(CSVLoadType.File(CSVFile.empty())) },
+            onClick = { onLoad(CSVLoadType.File(empty())) },
             content = { Text("Empty") }
         )
 
-        SelectButton(isFirstHeader = isFirstHeader, text = "Select File", onLoad = { onLoad(CSVLoadType.File(it)) })
+        val scope = rememberCoroutineScope()
+        Button(
+            modifier = Modifier.width(200.dp),
+            onClick = {
+                scope.launch {
+                    val file = runCatching { CsvReadWrite.open() }.getOrNull() ?: return@launch
+                    onLoad(CSVLoadType.File(file))
+                }
+            },
+            content = { Text("Select File") }
+        )
+
+//        SelectButton(isFirstHeader = isFirstHeader, text = "Select File", onLoad = { onLoad(CSVLoadType.File(it)) })
     }
 }
 
