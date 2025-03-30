@@ -85,7 +85,7 @@
 						if (event.lengthComputable) {
 							contentLength = event.total;
 						} else {
-							contentLength = parseInt(event.target.getResponseHeader('x-decompressed-content-length'), 10);
+							contentLength = parseInt(event.target.getResponseHeader('x-decompressed-content-length'), 10) || parseInt(event.target.getResponseHeader('Content-Length'), 10);
 						}
 						var percentLoaded = event.loaded / contentLength;
 						try { this.onprogress(PreloadProgressEvent(percentLoaded, event.loaded, contentLength)); } catch (e) { };
