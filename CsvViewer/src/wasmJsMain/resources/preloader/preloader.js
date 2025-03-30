@@ -54,6 +54,6 @@ function launchApplication() {
     sc.setAttribute("type", "application/javascript");
     setTimeout(() => {
         document.head.appendChild(sc);
-//        document.body.getElementsByClassName("loader-container").item(0)?.remove()
+        document.body.getElementsByClassName("loader-container").item(0)?.remove()
     }, 1000);
 }
