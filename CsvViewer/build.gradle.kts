@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    id("com.ryinex.kotlin.browser.preloader") version "1.0.0"
+    id("com.ryinex.kotlin.browser.preloader") version "1.0.1"
 }
 
 kotlin {
