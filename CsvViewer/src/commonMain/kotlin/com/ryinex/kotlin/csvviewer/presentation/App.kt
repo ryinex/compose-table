@@ -182,7 +182,7 @@ private fun Loader(isFirstHeader: Boolean, onIsFirstHeader: (Boolean) -> Unit, o
             horizontalArrangement = Arrangement.Center,
             verticalArrangement = Arrangement.Center
         ) {
-            UnWrapText(modifier = Modifier.weight(1f), text = "CSV Opener")
+            UnWrapText(modifier = Modifier.weight(1f), text = "CSV Viewer")
 
             CSVOpenButton(isFirstHeader, onIsFirstHeader, onLoad)
         }
