@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("com.ryinex.kotlin.browser.preloader") version "1.0.0"
 }
 
 kotlin {
@@ -124,4 +125,9 @@ compose.desktop {
             packageVersion = System.getProperty("VERSION_NAME") ?: "1.0.0"
         }
     }
+}
+
+preloader {
+    jsModuleName.set("CsvViewer")
+    logo.set(file("preloader/logo.svg"))
 }
