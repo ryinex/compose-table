@@ -47,9 +47,6 @@ jobs:
       - name: Build application
         run: |
             ./gradlew kotlinUpgradeYarnLock && ./gradlew wasmJsBrowserDistribution --stacktrace
-            CsvViewer/build/dist/wasmJs/productionExecutable/preloader/preloader.sh  
-            brotli CsvViewer/build/dist/wasmJs/productionExecutable/*.*
-            brotli CsvViewer/build/dist/wasmJs/productionExecutable/composeResources/*/*/*.*
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
