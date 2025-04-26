@@ -80,7 +80,6 @@ kotlin {
     }
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
         freeCompilerArgs.add("-Xwasm-use-new-exception-proposal")
     }
 }
@@ -122,7 +121,7 @@ dependencies {
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-    signAllPublications()
+    //signAllPublications()
 
     coordinates(rootProject.group.toString(), name, rootProject.version.toString())
 

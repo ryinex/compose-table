@@ -93,7 +93,7 @@ internal fun <VALUE, DATA : Any> RowScope.CellContainer(
     val isChildFocused = cell.properties.childInteractionSource.collectIsFocusedAsState().value
     Surface(
         modifier = config.modifier
-            .CellModifier(columnViewPortConfig)
+            .CellModifier(this, columnViewPortConfig)
             .onGloballyPositioned {
                 cellProperties.height = it.size.height
                 onWidth(it.size.width)
@@ -337,24 +337,23 @@ private fun Modifier.moveFocusOnTab(focusManager: FocusManager = LocalFocusManag
     false
 }
 
-context(RowScope)
 @Composable
 @Suppress("FunctionName")
-internal fun Modifier.CellModifier(column: DataTableColumnViewPort): Modifier {
+internal fun Modifier.CellModifier(scope: RowScope, column: DataTableColumnViewPort): Modifier = with(scope) {
     return when (column.layout) {
-        DataTableColumnLayout.FixedEquals -> this.weight(1f)
+        DataTableColumnLayout.FixedEquals -> weight(1f)
         DataTableColumnLayout.FixedWighted ->
-            this
-                .nullableWeight(column.weight)
+            this@CellModifier
+                .nullableWeight(scope, column.weight)
                 .minWidthModifier(column.width)
 
         DataTableColumnLayout.FixedFree ->
-            this
-                .nullableWeight(column.weight)
+            this@CellModifier
+                .nullableWeight(scope, column.weight)
                 .widthModifier(column.width)
 
-        DataTableColumnLayout.ScrollableKeepLargest -> this.widthIn(column.width.densityDp)
-        DataTableColumnLayout.ScrollableKeepInitial -> this.widthModifier(column.width)
+        DataTableColumnLayout.ScrollableKeepLargest -> this@CellModifier.widthIn(column.width.densityDp)
+        DataTableColumnLayout.ScrollableKeepInitial -> this@CellModifier.widthModifier(column.width)
     }
 }
 
@@ -368,7 +367,6 @@ private fun Modifier.minWidthModifier(width: Int): Modifier {
     return if (width != 0) this.widthIn(width.densityDp) else this
 }
 
-context(RowScope)
-private fun Modifier.nullableWeight(weight: Float?): Modifier {
-    return this.then(if (weight != null && weight > 0) Modifier.weight(weight) else Modifier)
+private fun Modifier.nullableWeight(scope: RowScope, weight: Float?): Modifier = with(scope) {
+    return this@nullableWeight.then(if (weight != null && weight > 0) Modifier.weight(weight) else Modifier)
 }
