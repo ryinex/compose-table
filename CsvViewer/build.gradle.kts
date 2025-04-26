@@ -68,6 +68,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation("org.jetbrains.compose.material:material-icons-core:1.6.11")
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -120,9 +121,10 @@ compose.desktop {
         mainClass = "com.ryinex.kotlin.csvviewer.presentation.MainKt"
 
         nativeDistributions {
+            val version = System.getProperty("VERSION_NAME") ?: "1.0.0"
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.ryinex.kotlin.csvviewer"
-            packageVersion = System.getProperty("VERSION_NAME") ?: "1.0.0"
+            packageVersion = if(version.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))) version else "1.0.0"
         }
     }
 }

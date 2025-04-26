@@ -80,7 +80,6 @@ kotlin {
     }
 
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
         freeCompilerArgs.add("-Xwasm-use-new-exception-proposal")
     }
 }

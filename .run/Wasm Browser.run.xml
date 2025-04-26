@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Wasm Browser" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value=" export JAVA_HOME=~/.jdks/corretto-17.0.13    &amp;&amp;  ./gradlew wasmBrowserDevelopmentRun --continuous " />
+    <option name="SCRIPT_TEXT" value=" export JAVA_HOME=/Users/ahmedelkhoudiry/Library/Java/JavaVirtualMachines/corretto-19.0.2/Contents/Home     &amp;&amp;  ./gradlew wasmBrowserDevelopmentRun --continuous " />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />
