@@ -121,7 +121,7 @@ dependencies {
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-    //signAllPublications()
+    signAllPublications()
 
     coordinates(rootProject.group.toString(), name, rootProject.version.toString())
 
