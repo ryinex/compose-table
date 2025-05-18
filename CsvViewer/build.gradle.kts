@@ -122,6 +122,7 @@ compose.desktop {
 
         nativeDistributions {
             val version = System.getProperty("VERSION_NAME") ?: "1.0.0"
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.ryinex.kotlin.csvviewer"
             packageVersion = if(version.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))) version else "1.0.0"
