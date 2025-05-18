@@ -1,6 +1,7 @@
 # Compose Table
 
 A powerful and flexible data table implementation for Compose Multiplatform. Built to handle basic data visualization and manipulation needs across desktop, web, and mobile platforms (android & ios).
+![Table](images/table.gif)
 
 ## Features
 

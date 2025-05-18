@@ -59,7 +59,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App() {
-    var isDarkTheme by remember { mutableStateOf(true) }
+    var isDarkTheme by remember { mutableStateOf(false) }
     AppTheme(useDarkTheme = isDarkTheme) {
         val isLocked = remember { mutableStateOf(false) }
         val backgroundColor = MaterialTheme.colorScheme.background
